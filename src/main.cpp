@@ -113,6 +113,10 @@ void loop() {
 }
 
 bool checkSignal() {
+#ifdef DEBUG
+	Serial.println("Function: bool checkSignal()");
+#endif
+
 	return analogRead(iPin) >= analogTreshold;
 }
 
