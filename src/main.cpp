@@ -262,7 +262,7 @@ bool checkInput(MorseSignal *input) {
 
 void getInput(MorseSignal *input) {
 #ifdef DEBUG
-	Serial.println("Function: MorseSignal* getInput()");
+	Serial.println("Function: void MorseSignal* getInput()");
 #endif
 
 	unsigned long lastTimeStamp = millis();
