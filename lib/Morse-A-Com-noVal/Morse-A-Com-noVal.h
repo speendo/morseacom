@@ -14,6 +14,7 @@ enum LoopState {
 
 void setup();
 void loop();
+bool checkSignal();
 void receiveInput();
 void translateInput(unsigned int *inputSig, MorseSignal *input);
 bool checkInput(MorseSignal *input);

@@ -23,6 +23,9 @@ MorseSignal password[] = {dit, dah};
 // define green led pin
 #define green 7
 
+// define doorbell treshold (analog value that is recognzed as signal)
+#define analogTreshold 500
+
 // define waiting time (how long will the Morse-A-Com wait for a new signal, after the previous signal is finished) (in ms)
 // ATTENTION: this is also the (min) time, the Morse-A-Com will wait after the last signal before it opens the door
 #define waitTime 1500
@@ -104,9 +107,13 @@ void loop() {
 //	Serial.println("Function: void loop()");
 #endif
 
-	if (digitalRead(iPin) == true) {
+	if (checkSignal()) {
 		receiveInput();
 	}
+}
+
+bool checkSignal() {
+	return analogRead(iPin) >= analogTreshold;
 }
 
 void receiveInput() {
@@ -290,7 +297,7 @@ void getInput(MorseSignal *input) {
 			}
 
 			// if signal ends
-			else if (digitalRead(iPin) == false) {
+			else if (checkSignal()) {
 				// if the input gets longer than the password, the password is clearly wrong => invalid password
 				if (inputCount >= (sizeof(password) / sizeof(MorseSignal))) {
 
@@ -362,7 +369,7 @@ void getInput(MorseSignal *input) {
 			}
 
 			// else, if a new signal comes in: switch to waitForSignalEnd
-			else if (digitalRead(iPin) == true) {
+			else if (checkSignal()) {
 				lastTimeStamp = millis();
 				loopState = waitForSignalEnd;
 
@@ -424,14 +431,14 @@ void reset() {
 	delay(resetTime);
 
 	// to begin, signal button has to be in released state
-	if (digitalRead(iPin) == true) {
+	if (checkSignal()) {
 #ifdef DEBUG
 		Serial.println("iPin is pressed (has to be released to go on)");
 #endif
 		// blink red
 		digitalWrite(green, false);
 		// do nothing until button is released
-		while(digitalRead(iPin) == true) {
+		while(checkSignal()) {
 			// do nothing
 		}
 		// blink orange again
