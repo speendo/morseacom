@@ -71,6 +71,9 @@ MorseSignal password[] = {dit, dah};
 // Setup serial communication (9600 should be right - leave it if you are unsure)
 #define serialBPS 9600
 
+// Reset password timeout
+#define resetPasswordTimeout 5000
+
 void setup() {
 #ifdef DEBUG
 	Serial.begin(serialBPS);
@@ -85,20 +88,82 @@ void setup() {
 	pinMode(red, OUTPUT);
 	pinMode(green, OUTPUT);
 
+	resetPassword();
+
 #ifdef DEBUG
 	Serial.print("passwordSize: ");
-	Serial.println((sizeof(password) / sizeof(MorseSignal)));
-	Serial.print("password: ");
-	for (unsigned int i = 0; i < (sizeof(password) / sizeof(MorseSignal)); i++) {
-		if (password[i] == dit) {
-			Serial.print(".");
-		} else {
-			Serial.print("-");
-		}
-	}
-	Serial.println();
+	Serial.println(getPasswordLength());
+	Serial.print("password: " + getPassword());
 #endif
 	reset();
+}
+
+void resetPassword() {
+	if (Serial) {
+		if (getPasswordLength() > 0) {
+			Serial.println("Current password: " + getPassword());
+		} else {
+			Serial.println("No password set.");
+		}
+		Serial.println("Change password? (Y/N)");
+		unsigned long lastTimeStamp = millis();
+
+		bool changePW = false;
+		// Timeout, because if(Serial) is not reliable on most boards
+		while (millis() - lastTimeStamp <= resetPasswordTimeout) {
+			if (Serial.available() > 0) {
+				char answer = char(Serial.read());
+				if (answer == 'N' || answer == 'n') {
+					break;
+				} else if (answer == 'Y' || answer == 'y') {
+					changePW = true;
+					break;
+				}
+			}
+		}
+		if (changePW == true) {
+			bool pwStored = false;
+			while (!pwStored) {
+				String newPW = getNewPW();
+				if (checkNewPW(newPW)) {
+					pwStored = storePW(newPW);
+				}
+			}
+		}
+	}
+}
+
+String getNewPW() {
+	Serial.println("Please enter new password:");
+	if (Serial.available() > 0) {
+		return Serial.readString();
+	}
+}
+
+bool checkNewPW(String newPW) {
+	// sanity checks
+	return true;
+}
+
+bool storePW(String newPW) {
+	// store password
+	return true;
+}
+
+String getPassword() {
+	String retPW = "";
+	for (unsigned int i = 0; i < (getPasswordLength()); i++) {
+		if (password[i] == dit) {
+			retPW += ".";
+		} else {
+			retPW += "-";
+		}
+	}
+	return retPW;
+}
+
+unsigned int getPasswordLength() {
+	return (sizeof(password) / sizeof(MorseSignal));
 }
 
 void loop() {
@@ -125,7 +190,7 @@ void receiveInput() {
 	Serial.println("Function: void receiveInput()");
 #endif
 
-	MorseSignal input[sizeof(password) / sizeof(MorseSignal)] = {};
+	MorseSignal input[getPasswordLength()] = {};
 	getInput(input);
 
 	if (checkInput(input)) {
@@ -139,12 +204,12 @@ void translateInput(unsigned int *inputSig, MorseSignal *input) {
 #ifdef DEBUG
 	Serial.println("Function: void translateInput(unsigned int *inputSig, MorseSignal *input)");
 #endif
-	unsigned int inputCopy[(sizeof(password) / sizeof(MorseSignal))];
+	unsigned int inputCopy[(getPasswordLength())];
 	memcpy(inputCopy, inputSig, sizeof(inputCopy));
 
 #ifdef DEBUG
 	Serial.println("Unordered keyLengths are:");
-	for (unsigned int i = 0; i < (sizeof(password) / sizeof(MorseSignal)); i++) {
+	for (unsigned int i = 0; i < (getPasswordLength()); i++) {
 		Serial.print("input: ");
 		Serial.println(inputSig[i]);
 	}
@@ -157,14 +222,14 @@ void translateInput(unsigned int *inputSig, MorseSignal *input) {
 
 #ifdef DEBUG
 	Serial.println("Ordered keyLengths are:");
-	for (unsigned int i = 0; i < (sizeof(password) / sizeof(MorseSignal)); i++) {
+	for (unsigned int i = 0; i < (getPasswordLength()); i++) {
 		Serial.print("inputCopy: ");
 		Serial.println(inputCopy[i]);
 	}
 #endif
 
 	unsigned int ditCount = 0;
-	for (unsigned int i = 0; i < (sizeof(password) / sizeof(MorseSignal)); i++) {
+	for (unsigned int i = 0; i < (getPasswordLength()); i++) {
 		if (password[i] == dit) {
 			ditCount++;
 		}
@@ -173,7 +238,7 @@ void translateInput(unsigned int *inputSig, MorseSignal *input) {
 	if (ditCount <= 0) {
 		avInputLength = 0;
 	}
-	else if (ditCount >= (sizeof(password) / sizeof(MorseSignal))) {
+	else if (ditCount >= (getPasswordLength())) {
 		avInputLength = maxSigTime;
 	}
 	else {
@@ -245,7 +310,7 @@ bool checkInput(MorseSignal *input) {
 #ifdef DEBUG
 	Serial.println("Function: bool checkInput(MorseSignal *input)");
 #endif
-	for (unsigned i = 0; i < sizeof(password) / sizeof(MorseSignal); i++) {
+	for (unsigned i = 0; i < getPasswordLength(); i++) {
 #ifdef DEBUG
 		Serial.print("password[");
 		Serial.print(i);
@@ -273,7 +338,7 @@ void getInput(MorseSignal *input) {
 
 	unsigned int inputCount = 0;
 
-	unsigned int inputSignals[sizeof(password) / sizeof(MorseSignal)] = {};
+	unsigned int inputSignals[int(getPasswordLength())] = {};
 
 	LoopState loopState = waitForSignalEnd;
 
@@ -303,14 +368,14 @@ void getInput(MorseSignal *input) {
 			// if signal ends
 			else if (checkSignal()) {
 				// if the input gets longer than the password, the password is clearly wrong => invalid password
-				if (inputCount >= (sizeof(password) / sizeof(MorseSignal))) {
+				if (inputCount >= (getPasswordLength())) {
 
 #ifdef DEBUG
 					Serial.println("Provided key is longer than password (switching to Standby mode)");
 					Serial.print("(currentInputValue: ");
 					Serial.print(inputCount);
 					Serial.print(", ArrayLength: ");
-					Serial.print((sizeof(password) / sizeof(MorseSignal)));
+					Serial.print((getPasswordLength()));
 					Serial.println(")");
 #endif
 
@@ -362,7 +427,7 @@ void getInput(MorseSignal *input) {
 #endif
 
 				// check if there are enough signals
-				if (inputCount == sizeof(password) / sizeof(MorseSignal)) {
+				if (inputCount == getPasswordLength()) {
 					// translate to MorseSignal
 					translateInput(inputSignals, input);
 					return;
