@@ -1,14 +1,12 @@
 #include "Arduino.h"
-#include "MorsePassword.h"
+#include "StoredMorsePassword.h"
 
 #include "EEPROM.h"
 
-MorsePassword::MorsePassword(unsigned int maxPasswordLength, unsigned int resetPasswordTimeout) {
-  MorsePassword::maxPasswordLength = maxPasswordLength;
-  MorsePassword::resetPasswordTimeout = resetPasswordTimeout;
+StoredMorsePassword::StoredMorsePassword() {
 }
 
-void MorsePassword::resetPassword() {
+void StoredMorsePassword::resetPassword() {
 	if (Serial) {
 		if (getPasswordLength() > 0) {
 			Serial.println("Current password: " + getPassword());
@@ -34,23 +32,21 @@ void MorsePassword::resetPassword() {
 		if (changePW == true) {
 			bool pwStored = false;
 			while (!pwStored) {
-				String newPW = getNewPW();
-				if (checkNewPW(newPW)) {
-					pwStored = storePW(newPW);
-				}
+				String newPW = _getNewPW();
+				pwStored = _storePW(newPW);
 			}
 		}
 	}
 }
 
-String MorsePassword::getNewPW() {
+String StoredMorsePassword::_getNewPW() {
 	Serial.println("Please enter new password (\".\": dit, \"-\": dah):");
 	if (Serial.available() > 0) {
 		return Serial.readString();
 	}
 }
 
-bool MorsePassword::checkNewPW(String newPW) {
+bool StoredMorsePassword::checkNewPW(String newPW) {
   // check length
   if (newPW.length() > maxPasswordLength) {
     return false;
@@ -64,7 +60,7 @@ bool MorsePassword::checkNewPW(String newPW) {
 	return true;
 }
 
-bool MorsePassword::storePW(String newPW) {
+bool StoredMorsePassword::_storePW(String newPW) {
 	if (checkNewPW(newPW)) {
     for (unsigned int i = 0; i < newPW.length(); i++) {
       if (newPW.charAt(i) == '.') {
@@ -81,7 +77,7 @@ bool MorsePassword::storePW(String newPW) {
   }
 }
 
-String MorsePassword::getPassword() {
+String StoredMorsePassword::getPassword() {
 	String retPW = "";
 	for (unsigned int i = 0; i < (getPasswordLength()); i++) {
 		if (EEPROM.read(i) == dit) {
@@ -93,11 +89,10 @@ String MorsePassword::getPassword() {
 	return retPW;
 }
 
-unsigned int MorsePassword::getPasswordLength() {
-	for (unsigned int i = 0; i < maxPasswordLength; i++) {
+unsigned int StoredMorsePassword::getPasswordLength() {
+	for (unsigned int i = 0; i < EEPROM.length(); i++) {
 		if (EEPROM.read(i) == empty || EEPROM.read(i) == 255) {
 			return i;
 		}
 	}
-	return maxPasswordLength;
 }

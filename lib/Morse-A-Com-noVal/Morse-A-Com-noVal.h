@@ -1,26 +1,8 @@
 #include "Arduino.h"
 #include "EEPROM.h"
 
-enum MorseSignal {
-  empty,
-  dit,
-  dah
-};
-
-enum LoopState {
-  noOperation,
-  waitForSignal,
-  waitForSignalEnd
-};
-
 void setup();
 void loop();
-void resetPassword();
-String getPassword();
-unsigned int getPasswordLength();
-String getNewPW();
-bool checkNewPW(String newPW);
-bool storePW(String newPW);
 bool checkSignal();
 void receiveInput();
 void translateInput(unsigned int *inputSig, MorseSignal *input);
