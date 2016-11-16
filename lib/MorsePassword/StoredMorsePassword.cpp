@@ -13,20 +13,16 @@ void StoredMorsePassword::resetPassword() {
 		} else {
 			Serial.println("No password set.");
 		}
-		Serial.println("Change password? (Y/N)");
+		Serial.println(String("Press <Enter> within ") + resetPasswordTimeout + " ms to change the password.");
 		unsigned long lastTimeStamp = millis();
 
 		bool changePW = false;
 		// Timeout, because if(Serial) is not reliable on most boards
 		while (millis() - lastTimeStamp <= resetPasswordTimeout) {
 			if (Serial.available() > 0) {
-				char answer = char(Serial.read());
-				if (answer == 'N' || answer == 'n') {
-					break;
-				} else if (answer == 'Y' || answer == 'y') {
-					changePW = true;
-					break;
-				}
+				// it is assumed that the input contains an <Enter>
+				changePW = true;
+				break;
 			}
 		}
 		if (changePW == true) {
