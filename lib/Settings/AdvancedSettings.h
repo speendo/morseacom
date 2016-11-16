@@ -1,5 +1,5 @@
 // Reset password timeout
-#define resetPasswordTimeout 5000
+#define resetPasswordTimeout 2000
 
 // define max password length (max number of dits or dahs in a password sequence)
 // ATTENTION: the size of this value must be reserved in the EEPROM as well as in
