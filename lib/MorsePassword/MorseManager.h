@@ -14,6 +14,8 @@ class MorseManager {
     MorseManager();
     void resetPassword();
     void awaitSignal();
+    void reset();
+
   private:
     enum LoopState {
       noOperation,
@@ -23,7 +25,10 @@ class MorseManager {
     StoredMorsePassword _storedPassword;
     InputMorsePassword _inputPassword;
     bool _checkSignal();
+    bool _checkInput();
     void _receiveInput();
+    void _grantEntry();
+    void _denyEntry();
 };
 
 #endif

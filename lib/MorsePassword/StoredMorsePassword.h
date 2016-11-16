@@ -14,6 +14,8 @@ class StoredMorsePassword {
     String getPassword();
     bool checkNewPW(String newPW);
     unsigned int getPasswordLength();
+    unsigned int getDitCount();
+    MorseSignal getValueAt(unsigned int i);
   private:
     String _getNewPW();
     bool _storePW(String newPW);

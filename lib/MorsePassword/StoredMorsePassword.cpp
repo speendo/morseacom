@@ -91,8 +91,22 @@ String StoredMorsePassword::getPassword() {
 
 unsigned int StoredMorsePassword::getPasswordLength() {
 	for (unsigned int i = 0; i < EEPROM.length(); i++) {
-		if (EEPROM.read(i) == empty || EEPROM.read(i) == 255) {
+		if (getValueAt(i) == empty || getValueAt(i) == 255) {
 			return i;
 		}
 	}
+}
+
+unsigned int StoredMorsePassword::getDitCount() {
+	unsigned int ditCount = 0;
+	for (unsigned int i = 0; i < getPasswordLength(); i++) {
+		if (getValueAt(i) == dit) {
+			ditCount++;
+		}
+	}
+	return ditCount;
+}
+
+MorseSignal StoredMorsePassword::getValueAt(unsigned int i) {
+	return MorseSignal(EEPROM.read(i));
 }

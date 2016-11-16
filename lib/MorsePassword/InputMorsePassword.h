@@ -16,9 +16,12 @@ class InputMorsePassword {
       preCheckFailed
     };
 
-    InputMorsePassword(unsigned int _expectedPasswordLength);
+    InputMorsePassword();
+    InputMorsePassword(unsigned int expectedPasswordLength);
     void processInput(bool signal);
     InputStatus getInputStatus();
+    MorseSignal getValueAt(unsigned int i);
+    void translateInput(unsigned int ditCount);
     void reset();
   private:
     enum LoopState {
@@ -32,6 +35,8 @@ class InputMorsePassword {
     LoopState _loopState;
     unsigned long _lastTimeStamp;
     unsigned int _position;
+    void _quicksort(unsigned int *begin, unsigned int *end);
+    void _swap(unsigned int *a, unsigned int *b);
 
     unsigned int _expectedPasswordLength;
 

@@ -27,15 +27,28 @@ void MorseManager::awaitSignal() {
     }
 
     case InputMorsePassword::candidate:
+    _inputPassword.translateInput(_storedPassword.getDitCount());
     if (_checkInput()) {
-      grantEntry();
+      // blink green
+      digitalWrite(red, false);
+      digitalWrite(green, true);
+
+      _grantEntry();
+
+      digitalWrite(green, false);
     } else {
-      denyEntry();
+      // blink red
+      digitalWrite(green, false);
+      digitalWrite(red, true);
+
+      _denyEntry();
+
+      digitalWrite(red, false);
     }
     break;
 
     case InputMorsePassword::preCheckFailed:
-      denyEntry();
+      _denyEntry();
       break;
 
     case InputMorsePassword::noInput:
@@ -48,6 +61,49 @@ void MorseManager::awaitSignal() {
   }
 }
 
+bool MorseManager::_checkInput() {
+#ifdef DEBUG
+	Serial.println("Function: bool checkInput(MorseSignal *input)");
+#endif
+
+  for (unsigned int i = 0; i < _storedPassword.getPasswordLength(); i++) {
+
+#ifdef DEBUG
+    		Serial.print("password[" + i + "] = " + _storedPassword.getValueAt(i) + ", input[" + i + "] = " + _inputPassword.getValueAt(i));
+#endif
+
+    if (_inputPassword.getValueAt(i) != _storedPassword.getValueAt(i)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void MorseManager::_grantEntry() {
+#ifdef DEBUG
+	Serial.println("Function: void grantEntry()");
+#endif
+	// wait humanize stealth time
+	delay(minHStealthTime + random(rndHStealthTime));
+	// open door
+	digitalWrite(oPin, true);
+	delay(openTime);
+	digitalWrite(oPin, false);
+
+	// reset
+	reset();
+}
+
+void MorseManager::_denyEntry() {
+#ifdef DEBUG
+	Serial.println("Function: void denyEntry()");
+#endif
+	delay(denyTime);
+
+	// reset
+	reset();
+}
+
 bool MorseManager::_checkSignal() {
 #ifdef DEBUG
 	// This makes the output somehow unreadable
@@ -57,167 +113,38 @@ bool MorseManager::_checkSignal() {
 	return analogRead(iPin) >= analogTreshold;
 }
 
-void MorseManager::_receiveInput() {
+void MorseManager::reset() {
 #ifdef DEBUG
-	Serial.println("Function: void receiveInput()");
+	Serial.println("Function: void reset()");
 #endif
 
-	getInput(input, maxPasswordLength, red, green, maxSigTime, minSigTime, waitTime);
+  _inputPassword.reset();
 
-	if (checkInput(input)) {
-		grantEntry();
-	} else {
-		denyEntry();
-	}
-}
+	// blink orange
+	digitalWrite(red, true);
+	digitalWrite(green, true);
+	delay(resetTime);
 
-void MorseManager::getInput(MorseSignal *input, unsigned int maxPasswordLength, unsigned int red, unsigned int green, unsigned int maxSigTime, unsigned int minSigTime, unsigned int waitTime) {
+	// to begin, signal button has to be in released state
+	if (_checkSignal()) {
 #ifdef DEBUG
-	Serial.println("Function: void MorseSignal* getInput()");
+		Serial.println("iPin is pressed (has to be released to go on)");
 #endif
-
-	unsigned long lastTimeStamp = millis();
-
-	unsigned int inputCount = 0;
-
-	unsigned int inputSignals[maxPasswordLength] = {};
-
-	LoopState loopState = waitForSignalEnd;
-
-#ifdef DEBUG
-	Serial.println("loopState = waitForSignalEnd");
-#endif
-
-	while(true) {
-		switch (loopState) {
-
-		case waitForSignalEnd:
-
-			// blink orange
-			digitalWrite(red, true);
-			digitalWrite(green, true);
-
-			// if signal gets longer than waiting time
-			if (millis() - lastTimeStamp > maxSigTime) {
-
-#ifdef DEBUG
-				Serial.println("Signal was too long (switching to Standby mode)");
-#endif
-				// return an empty array (which is later detected as invalid password
-				return;
-			}
-
-			// if signal ends
-			else if (checkSignal()) {
-				// if the input gets longer than the password, the password is clearly wrong => invalid password
-				if (inputCount >= maxPasswordLength) {
-
-#ifdef DEBUG
-					Serial.println("Provided key is longer than password (switching to Standby mode)");
-					Serial.print("(currentInputValue: ");
-					Serial.print(inputCount);
-					Serial.print(", ArrayLength: ");
-					Serial.print((getPasswordLength()));
-					Serial.println(")");
-#endif
-
-
-					// return an empty array (which is later detected as invalid password
-					return;
-				}
-
-				// else write signal to array (if it's longer than minSigTime)
-				unsigned int sigTime = (millis() - lastTimeStamp);
-#ifdef DEBUG
-				Serial.print("Signal length:");
-				Serial.println(sigTime);
-#endif
-
-				if (sigTime >= minSigTime) {
-					inputSignals[inputCount] = sigTime;
-#ifdef DEBUG
-					Serial.print("inputSignal[");
-					Serial.print(inputCount);
-					Serial.print("] = ");
-					Serial.println(sigTime);
-#endif
-					inputCount++;
-				}
-
-				// no matter how short the signal was, reset the following variables
-				loopState = waitForSignal;
-
-#ifdef DEBUG
-				Serial.println("loopstate = waitForSignal");
-#endif
-
-				lastTimeStamp = millis();
-				// stop blinking orange
-				digitalWrite(red, false);
-				digitalWrite(green, false);
-			}
-			break;
-
-			// while Morse-A-Tron is not receiving a signal (but is waiting for one)
-
-		case waitForSignal:
-
-			if (millis() - lastTimeStamp > waitTime) {
-
-#ifdef DEBUG
-				Serial.println("Waiting time expired, now returning array");
-#endif
-
-				// check if there are enough signals
-				if (inputCount == getPasswordLength()) {
-					// translate to MorseSignal
-					translateInput(inputSignals, input);
-					return;
-				} else {
-					// return an empty array (which is later detected as invalid password
-					return;
-				}
-			}
-
-			// else, if a new signal comes in: switch to waitForSignalEnd
-			else if (checkSignal()) {
-				lastTimeStamp = millis();
-				loopState = waitForSignalEnd;
-
-#ifdef DEBUG
-				Serial.println("loopstate = waitForSignalEnd");
-#endif
-
-			}
-			break;
-
-			// should not happen ...
-		default:
-			// return an empty array (which is later detected as invalid password
-			return;
+		// blink red
+		digitalWrite(green, false);
+		// do nothing until button is released
+		while(_checkSignal()) {
+			// do nothing
 		}
+		// blink orange again
+		digitalWrite(green, true);
 	}
-}
 
-bool InputMorsePassword::checkInput(MorseSignal *input) {
+	// end blink orange
+	digitalWrite(red, false);
+	digitalWrite(green, false);
+
 #ifdef DEBUG
-	Serial.println("Function: bool checkInput(MorseSignal *input)");
+	Serial.println("Resetting now");
 #endif
-	for (unsigned i = 0; i < getPasswordLength(); i++) {
-#ifdef DEBUG
-		Serial.print("password[");
-		Serial.print(i);
-		Serial.print("] = ");
-		Serial.print(password[i]);
-		Serial.print(", ");
-		Serial.print("input[");
-		Serial.print(i);
-		Serial.print("] = ");
-		Serial.println(input[i]);
-#endif
-		if (password[i] != input[i]) {
-			return false;
-		}
-	}
-	return true;
 }
