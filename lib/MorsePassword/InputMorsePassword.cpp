@@ -2,12 +2,6 @@
 #include "InputMorsePassword.h"
 #include "AbstractMorsePassword.h"
 
-// do I really need a default constructor?
-InputMorsePassword::InputMorsePassword() {
-	_expectedPasswordLength = maxPasswordLength;
-	reset();
-}
-
 InputMorsePassword::InputMorsePassword(unsigned int expectedPasswordLength) {
 	_expectedPasswordLength = expectedPasswordLength;
 	reset();

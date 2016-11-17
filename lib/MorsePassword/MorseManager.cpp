@@ -2,9 +2,7 @@
 #include "MorseManager.h"
 #include "AbstractMorsePassword.h"
 
-MorseManager::MorseManager() {
-  _storedPassword = StoredMorsePassword();
-  _inputPassword = InputMorsePassword(_storedPassword.getPasswordLength());
+MorseManager::MorseManager() : _storedPassword(), _inputPassword(_storedPassword.getPasswordLength()) {
 }
 
 void MorseManager::resetPassword() {

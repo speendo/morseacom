@@ -16,7 +16,6 @@ class InputMorsePassword {
       preCheckFailed
     };
 
-    InputMorsePassword();
     InputMorsePassword(unsigned int expectedPasswordLength);
     void processInput(bool signal);
     InputStatus getInputStatus();
