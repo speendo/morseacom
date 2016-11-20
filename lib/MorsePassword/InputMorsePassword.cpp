@@ -3,11 +3,19 @@
 #include "AbstractMorsePassword.h"
 
 InputMorsePassword::InputMorsePassword(unsigned int expectedPasswordLength) {
+#ifdef DEBUG
+	Serial.println("Function: InputMorsePassword(unsigned int expectedPasswordLength)");
+#endif
+
 	_expectedPasswordLength = expectedPasswordLength;
 	reset();
 }
 
 void InputMorsePassword::processInput(bool signal) {
+#ifdef DEBUG
+	Serial.println("Function: void processInput(bool signal)");
+#endif
+
 	unsigned long newTimeStamp = millis();
 	if (_loopState == waitForSignal) {
 		if (signal) {
@@ -63,12 +71,20 @@ void InputMorsePassword::processInput(bool signal) {
 }
 
 void InputMorsePassword::beginSignal(unsigned long newTimeStamp) {
+#ifdef DEBUG
+	Serial.println("Function: void beginSignal(unsigned long newTimeStamp)");
+#endif
+
 	_lastTimeStamp = newTimeStamp;
 	_loopState = waitForSignalEnd;
 	_inputStatus = shortCandidate;
 }
 
 void InputMorsePassword::endSignal(unsigned long newTimeStamp) {
+#ifdef DEBUG
+	Serial.println("Function: endSignal(unsigned long newTimeStamp)");
+#endif
+
 	unsigned int sigTime = newTimeStamp - _lastTimeStamp;
 
 #ifdef DEBUG
@@ -96,6 +112,10 @@ void InputMorsePassword::endSignal(unsigned long newTimeStamp) {
 }
 
 InputMorsePassword::InputStatus InputMorsePassword::getInputStatus() {
+#ifdef DEBUG
+	Serial.println("Function: InputStatus getInputStatus()");
+#endif
+
 	return _inputStatus;
 }
 
@@ -103,6 +123,7 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 #ifdef DEBUG
 	Serial.println("Function: void translateInput()");
 #endif
+
 	unsigned int durationsCopy[_expectedPasswordLength];
 	memcpy(durationsCopy, _durations, sizeof(durationsCopy));
 
@@ -195,11 +216,20 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 }
 
 MorseSignal InputMorsePassword::getValueAt(unsigned int i) {
-	// remember to always run translateInput first - this cannot be checked here.
+// remember to always run translateInput() first - this cannot be checked here.
+
+#ifdef DEBUG
+	Serial.println("Function: MorseSignal getValueAt(unsigned int i)");
+#endif
+
 	return _enteredPassword[i];
 }
 
 void InputMorsePassword::reset() {
+#ifdef DEBUG
+	Serial.println("Function: void reset()");
+#endif
+
 	_loopState = noOperation;
 	_lastTimeStamp = 0; // this is maybe not necessary
 	_position = 0;
