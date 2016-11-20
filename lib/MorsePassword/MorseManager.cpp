@@ -3,13 +3,24 @@
 #include "AbstractMorsePassword.h"
 
 MorseManager::MorseManager() : _storedPassword(), _inputPassword(_storedPassword.getPasswordLength()) {
+#ifdef DEBUG
+	Serial.println("Function: MorseManager()");
+#endif
 }
 
 void MorseManager::resetPassword() {
+#ifdef DEBUG
+	Serial.println("Function: resetPassword()");
+#endif
+
   _storedPassword.resetPassword();
 }
 
 void MorseManager::awaitSignal() {
+#ifdef DEBUG
+  Serial.println("Function: void awaitSignal()");
+#endif
+
   _inputPassword.processInput(_checkSignal());
   switch (_inputPassword.getInputStatus()) {
 
@@ -81,6 +92,7 @@ void MorseManager::_grantEntry() {
 #ifdef DEBUG
 	Serial.println("Function: void grantEntry()");
 #endif
+
 	// wait humanize stealth time
 	delay(minHStealthTime + random(rndHStealthTime));
 	// open door
@@ -96,6 +108,7 @@ void MorseManager::_denyEntry() {
 #ifdef DEBUG
 	Serial.println("Function: void denyEntry()");
 #endif
+
 	delay(denyTime);
 
 	// reset
