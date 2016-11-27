@@ -3,9 +3,10 @@
 #include "AbstractMorsePassword.h"
 
 MorseManager::MorseManager() : _storedPassword(), _inputPassword(_storedPassword.getPasswordLength()) {
-#ifdef DEBUG
-	Serial.println(F("Function: MorseManager()"));
-#endif
+// breaks serial connection in the beginning
+//#ifdef DEBUG
+//	Serial.println(F("Function: MorseManager()"));
+//#endif
 }
 
 void MorseManager::resetPassword() {
@@ -21,9 +22,10 @@ void MorseManager::resetPassword() {
 }
 
 void MorseManager::awaitSignal() {
-#ifdef DEBUG
-  Serial.println(F("Function: void awaitSignal()"));
-#endif
+// makes debug output unreadable
+//#ifdef DEBUG
+//  Serial.println(F("Function: void awaitSignal()"));
+//#endif
 
   _inputPassword.processInput(_checkSignal());
   switch (_inputPassword.getInputStatus()) {

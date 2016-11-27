@@ -4,9 +4,10 @@
 #include "EEPROM.h"
 
 StoredMorsePassword::StoredMorsePassword() {
-#ifdef DEBUG
-	Serial.println(F("Function: StoredMorsePassword()"));
-#endif
+// breaks serial connection in the beginning
+//#ifdef DEBUG
+//	Serial.println(F("Function: StoredMorsePassword()"));
+//#endif
 }
 
 void StoredMorsePassword::resetPassword() {
@@ -26,10 +27,11 @@ void StoredMorsePassword::resetPassword() {
 		bool changePW = false;
 		// Timeout, because if(Serial) is not reliable on most boards
 		while (millis() - lastTimeStamp <= resetPasswordTimeout) {
-			if (Serial.available() > 0) {
-				// it is assumed that the input contains an <Enter>
-				changePW = true;
-				break;
+			if (Serial.available()) {
+				if ((char)Serial.read() == '\n') {
+					changePW = true;
+					break;
+				}
 			}
 		}
 		if (changePW == true) {
@@ -47,15 +49,35 @@ String StoredMorsePassword::_getNewPW() {
 	Serial.println(F("Function: String _getNewPW()"));
 #endif
 
-	Serial.println("Please enter new password (\".\": dit, \"-\": dah):");
-	if (Serial.available() > 0) {
-		return Serial.readString();
+	String newPassword = "";
+
+	// flush the serial buffer
+	while (Serial.available() > 0) {
+		Serial.read();
+	}
+
+	// now receive the password
+	Serial.println("Please enter new password (\".\": dit, \"-\": dah) and press <Enter>:");
+	while (true) {
+		if (Serial.available()) {
+			char inChar = (char)Serial.read();
+
+			Serial.print((String)inChar);
+
+			if (inChar == '\r' || inChar == '\n') {
+				return newPassword;
+			} else {
+				newPassword += inChar;
+			}
+		}
 	}
 }
 
 bool StoredMorsePassword::checkNewPW(String newPW) {
 #ifdef DEBUG
 	Serial.println(F("Function: bool checkNewPW(String newPW)"));
+
+	Serial.println("Entered Password is: <" + newPW + ">");
 #endif
 
   // check length
@@ -67,7 +89,7 @@ bool StoredMorsePassword::checkNewPW(String newPW) {
   // check characters
   for (unsigned int i = 0; i < newPW.length(); i++) {
     if (newPW.charAt(i) != '.' && newPW.charAt(i) != '-') {
-			Serial.println("Password contains invalid character!");
+			Serial.println(String("Password contains invalid character: \'") + newPW.charAt(i) + "\'!");
 
       return false;
     }
@@ -113,9 +135,10 @@ String StoredMorsePassword::getPassword() {
 }
 
 unsigned int StoredMorsePassword::getPasswordLength() {
-#ifdef DEBUG
-	Serial.println(F("Function: unsigned int getPasswordLength()"));
-#endif
+// breaks serial connection in the beginning
+//#ifdef DEBUG
+//	Serial.println(F("Function: unsigned int getPasswordLength()"));
+//#endif
 
 	for (unsigned int i = 0; i < EEPROM.length(); i++) {
 		if (getValueAt(i) == empty || getValueAt(i) == 255) {
@@ -139,9 +162,10 @@ unsigned int StoredMorsePassword::getDitCount() {
 }
 
 MorseSignal StoredMorsePassword::getValueAt(unsigned int i) {
-#ifdef DEBUG
-	Serial.println(F("Function: MorseSignal getValueAt(unsigned int i)"));
-#endif
+// breaks serial connection in the beginning
+//#ifdef DEBUG
+//	Serial.println(F("Function: MorseSignal getValueAt(unsigned int i)"));
+//#endif
 
 	return MorseSignal(EEPROM.read(i));
 }

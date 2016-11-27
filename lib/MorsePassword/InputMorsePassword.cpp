@@ -3,18 +3,20 @@
 #include "AbstractMorsePassword.h"
 
 InputMorsePassword::InputMorsePassword(unsigned int expectedPasswordLength) {
-#ifdef DEBUG
-	Serial.println(F("Function: InputMorsePassword(unsigned int expectedPasswordLength)"));
-#endif
+// breaks serial connection in the beginning
+//#ifdef DEBUG
+//	Serial.println(F("Function: InputMorsePassword(unsigned int expectedPasswordLength)"));
+//#endif
 
 	_expectedPasswordLength = expectedPasswordLength;
 	reset();
 }
 
 void InputMorsePassword::processInput(bool signal) {
-#ifdef DEBUG
-	Serial.println(F("Function: void processInput(bool signal)"));
-#endif
+// makes debug output unreadable
+//#ifdef DEBUG
+//	Serial.println(F("Function: void processInput(bool signal)"));
+//#endif
 
 	unsigned long newTimeStamp = millis();
 	if (_loopState == waitForSignal) {
@@ -112,9 +114,10 @@ void InputMorsePassword::endSignal(unsigned long newTimeStamp) {
 }
 
 InputMorsePassword::InputStatus InputMorsePassword::getInputStatus() {
-#ifdef DEBUG
-	Serial.println(F("Function: InputStatus getInputStatus()"));
-#endif
+// makes debug output unreadable
+//#ifdef DEBUG
+//	Serial.println(F("Function: InputStatus getInputStatus()"));
+//#endif
 
 	return _inputStatus;
 }
@@ -225,9 +228,10 @@ MorseSignal InputMorsePassword::getValueAt(unsigned int i) {
 }
 
 void InputMorsePassword::reset() {
-#ifdef DEBUG
-	Serial.println(F("Function: void reset()"));
-#endif
+// breaks serial connection in the beginning
+//#ifdef DEBUG
+//	Serial.println(F("Function: void reset()"));
+//#endif
 
 	_loopState = noOperation;
 	_lastTimeStamp = 0; // this is maybe not necessary

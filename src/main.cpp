@@ -15,11 +15,6 @@
 
 MorseManager morseManager;
 
-// this has to come after the definition of morseManager
-#if (debug == true)
-#define DEBUG
-#endif
-
 void setup() {
 	Serial.begin(serialBPS);
 

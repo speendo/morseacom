@@ -11,4 +11,4 @@
 #define serialBPS 9600
 
 // Debug on or off
-#define debug true
+#define DEBUG
