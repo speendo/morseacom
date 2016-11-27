@@ -4,7 +4,7 @@
 
 InputMorsePassword::InputMorsePassword(unsigned int expectedPasswordLength) {
 #ifdef DEBUG
-	Serial.println("Function: InputMorsePassword(unsigned int expectedPasswordLength)");
+	Serial.println(F("Function: InputMorsePassword(unsigned int expectedPasswordLength)"));
 #endif
 
 	_expectedPasswordLength = expectedPasswordLength;
@@ -13,7 +13,7 @@ InputMorsePassword::InputMorsePassword(unsigned int expectedPasswordLength) {
 
 void InputMorsePassword::processInput(bool signal) {
 #ifdef DEBUG
-	Serial.println("Function: void processInput(bool signal)");
+	Serial.println(F("Function: void processInput(bool signal)"));
 #endif
 
 	unsigned long newTimeStamp = millis();
@@ -25,7 +25,7 @@ void InputMorsePassword::processInput(bool signal) {
 			if (newTimeStamp - _lastTimeStamp > waitTime) {
 
 #ifdef DEBUG
-				Serial.println("Waiting time expired");
+				Serial.println(F("Waiting time expired"));
 #endif
 
 				// check if there are enough signals
@@ -42,7 +42,7 @@ void InputMorsePassword::processInput(bool signal) {
 			if (newTimeStamp - _lastTimeStamp > maxSigTime) {
 
 #ifdef DEBUG
-				Serial.println("Signal was too long");
+				Serial.println(F("Signal was too long"));
 #endif
 
 				_inputStatus = preCheckFailed;
@@ -53,8 +53,8 @@ void InputMorsePassword::processInput(bool signal) {
 			if (_position >= _expectedPasswordLength) {
 
 #ifdef DEBUG
-				Serial.println("Provided key is longer than password (switching to Standby mode)");
-				Serial.print("(current length: " + inputCount + ", expected length: " + _expectedPasswordLength + ")");
+				Serial.println(F("Provided key is longer than password (switching to Standby mode)"));
+				Serial.print(F("(current length: " + inputCount + ", expected length: " + _expectedPasswordLength + ")"));
 #endif
 
 				_inputStatus = preCheckFailed;
@@ -72,7 +72,7 @@ void InputMorsePassword::processInput(bool signal) {
 
 void InputMorsePassword::beginSignal(unsigned long newTimeStamp) {
 #ifdef DEBUG
-	Serial.println("Function: void beginSignal(unsigned long newTimeStamp)");
+	Serial.println(F("Function: void beginSignal(unsigned long newTimeStamp)"));
 #endif
 
 	_lastTimeStamp = newTimeStamp;
@@ -82,20 +82,20 @@ void InputMorsePassword::beginSignal(unsigned long newTimeStamp) {
 
 void InputMorsePassword::endSignal(unsigned long newTimeStamp) {
 #ifdef DEBUG
-	Serial.println("Function: endSignal(unsigned long newTimeStamp)");
+	Serial.println(F("Function: endSignal(unsigned long newTimeStamp)"));
 #endif
 
 	unsigned int sigTime = newTimeStamp - _lastTimeStamp;
 
 #ifdef DEBUG
-	Serial.print("Signal length:"	+ sigTime);
+	Serial.print(F("Signal length:"	+ sigTime));
 #endif
 
 	// check if sigTime is at least minSigTime
 	if (sigTime >= minSigTime) {
 
 #ifdef DEBUG
-	Serial.print("inputSignal[" + inputCount + "] = " + sigTime);
+	Serial.print(F("inputSignal[" + inputCount + "] = " + sigTime));
 #endif
 
 		_durations[_position] =
@@ -105,7 +105,7 @@ void InputMorsePassword::endSignal(unsigned long newTimeStamp) {
 		_inputStatus = shortCandidate;
 
 #ifdef DEBUG
-		Serial.println("loopstate = waitForSignal");
+		Serial.println(F("loopstate = waitForSignal"));
 #endif
 
 	}
@@ -113,7 +113,7 @@ void InputMorsePassword::endSignal(unsigned long newTimeStamp) {
 
 InputMorsePassword::InputStatus InputMorsePassword::getInputStatus() {
 #ifdef DEBUG
-	Serial.println("Function: InputStatus getInputStatus()");
+	Serial.println(F("Function: InputStatus getInputStatus()"));
 #endif
 
 	return _inputStatus;
@@ -121,16 +121,16 @@ InputMorsePassword::InputStatus InputMorsePassword::getInputStatus() {
 
 void InputMorsePassword::translateInput(unsigned int ditCount) {
 #ifdef DEBUG
-	Serial.println("Function: void translateInput()");
+	Serial.println(F("Function: void translateInput()"));
 #endif
 
 	unsigned int durationsCopy[_expectedPasswordLength];
 	memcpy(durationsCopy, _durations, sizeof(durationsCopy));
 
 #ifdef DEBUG
-	Serial.println("Unordered keyLengths are:");
+	Serial.println(F("Unordered keyLengths are:"));
 	for (unsigned int i = 0; i < (_expectedPasswordLength); i++) {
-		Serial.print("input: " + _durations[i]);
+		Serial.print(F("input: " + _durations[i]));
 	}
 #endif
 
@@ -140,10 +140,9 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 	unsigned int avInputLength;
 
 #ifdef DEBUG
-	Serial.println("Ordered keyLengths are:");
+	Serial.println(F("Ordered keyLengths are:"));
 	for (unsigned int i = 0; i < (_expectedPasswordLength); i++) {
-		Serial.print("durationsCopy: ");
-		Serial.println(durationsCopy[i]);
+		Serial.println(F("durationsCopy: " + durationsCopy[i]);
 	}
 #endif
 
@@ -174,30 +173,30 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 		avInputLength = (avDit + avDah) / 2;
 
 #ifdef DEBUG
-		Serial.print("avDit: " + avDit);
-		Serial.print("avDah: " + avDah);
+		Serial.println(F("avDit: " + avDit));
+		Serial.println(F("avDah: " + avDah));
 #endif
 	}
 
 #ifdef DEBUG
-	Serial.print("avInputLength: " + avInputLength);
+	Serial.println(F("avInputLength: " + avInputLength));
 #endif
 
 #ifdef DEBUG
-	Serial.print("input: ");
+	Serial.print(F("input: "));
 #endif
 	// now generate dits and dahs out of user input
 	for (unsigned int i = 0; i < (sizeof(durationsCopy) / sizeof(unsigned int)); i++) {
 		if (_durations[i] < (avInputLength - (ditDahTreshold * avInputLength))) {
 			_enteredPassword[i] = dit;
 #ifdef DEBUG
-			Serial.print(".");
+			Serial.print(F("."));
 #endif
 		}
 		else if (_durations[i] > (avInputLength + (ditDahTreshold * avInputLength))) {
 			_enteredPassword[i] = dah;
 #ifdef DEBUG
-			Serial.print("-");
+			Serial.print(F("-"));
 #endif
 		}
 		else {
@@ -206,7 +205,7 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 			// write an empty value in inputMorse (later this will be recognized as invalid input
 			_enteredPassword[i] = empty;
 #ifdef DEBUG
-			Serial.print("?");
+			Serial.print(F("?"));
 #endif
 		}
 	}
@@ -219,7 +218,7 @@ MorseSignal InputMorsePassword::getValueAt(unsigned int i) {
 // remember to always run translateInput() first - this cannot be checked here.
 
 #ifdef DEBUG
-	Serial.println("Function: MorseSignal getValueAt(unsigned int i)");
+	Serial.println(F("Function: MorseSignal getValueAt(unsigned int i)"));
 #endif
 
 	return _enteredPassword[i];
@@ -227,7 +226,7 @@ MorseSignal InputMorsePassword::getValueAt(unsigned int i) {
 
 void InputMorsePassword::reset() {
 #ifdef DEBUG
-	Serial.println("Function: void reset()");
+	Serial.println(F("Function: void reset()"));
 #endif
 
 	_loopState = noOperation;

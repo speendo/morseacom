@@ -5,13 +5,13 @@
 
 StoredMorsePassword::StoredMorsePassword() {
 #ifdef DEBUG
-	Serial.println("Function: StoredMorsePassword()");
+	Serial.println(F("Function: StoredMorsePassword()"));
 #endif
 }
 
 void StoredMorsePassword::resetPassword() {
 #ifdef DEBUG
-	Serial.println("Function: void resetPassword()");
+	Serial.println(F("Function: void resetPassword()"));
 #endif
 
 	if (Serial) {
@@ -44,7 +44,7 @@ void StoredMorsePassword::resetPassword() {
 
 String StoredMorsePassword::_getNewPW() {
 #ifdef DEBUG
-	Serial.println("Function: String _getNewPW()");
+	Serial.println(F("Function: String _getNewPW()"));
 #endif
 
 	Serial.println("Please enter new password (\".\": dit, \"-\": dah):");
@@ -55,7 +55,7 @@ String StoredMorsePassword::_getNewPW() {
 
 bool StoredMorsePassword::checkNewPW(String newPW) {
 #ifdef DEBUG
-	Serial.println("Function: bool checkNewPW(String newPW)");
+	Serial.println(F("Function: bool checkNewPW(String newPW)"));
 #endif
 
   // check length
@@ -77,7 +77,7 @@ bool StoredMorsePassword::checkNewPW(String newPW) {
 
 bool StoredMorsePassword::_storePW(String newPW) {
 #ifdef DEBUG
-	Serial.println("Function: bool _storePW(String newPW)");
+	Serial.println(F("Function: bool _storePW(String newPW)"));
 #endif
 
 	if (checkNewPW(newPW)) {
@@ -98,7 +98,7 @@ bool StoredMorsePassword::_storePW(String newPW) {
 
 String StoredMorsePassword::getPassword() {
 #ifdef DEBUG
-	Serial.println("Function: String getPassword()");
+	Serial.println(F("Function: String getPassword()"));
 #endif
 
 	String retPW = "";
@@ -114,7 +114,7 @@ String StoredMorsePassword::getPassword() {
 
 unsigned int StoredMorsePassword::getPasswordLength() {
 #ifdef DEBUG
-	Serial.println("Function: unsigned int getPasswordLength()");
+	Serial.println(F("Function: unsigned int getPasswordLength()"));
 #endif
 
 	for (unsigned int i = 0; i < EEPROM.length(); i++) {
@@ -126,7 +126,7 @@ unsigned int StoredMorsePassword::getPasswordLength() {
 
 unsigned int StoredMorsePassword::getDitCount() {
 #ifdef DEBUG
-	Serial.println("Function: unsigned int getDitCount()");
+	Serial.println(F("Function: unsigned int getDitCount()"));
 #endif
 
 	unsigned int ditCount = 0;
@@ -140,7 +140,7 @@ unsigned int StoredMorsePassword::getDitCount() {
 
 MorseSignal StoredMorsePassword::getValueAt(unsigned int i) {
 #ifdef DEBUG
-	Serial.println("Function: MorseSignal getValueAt(unsigned int i)");
+	Serial.println(F("Function: MorseSignal getValueAt(unsigned int i)"));
 #endif
 
 	return MorseSignal(EEPROM.read(i));

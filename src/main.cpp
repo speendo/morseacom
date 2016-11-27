@@ -20,8 +20,8 @@ MorseManager morseManager;
 void setup() {
 #ifdef DEBUG
 	Serial.begin(serialBPS);
-	Serial.println("DEBUG: on");
-	Serial.println("Function: void setup()");
+	Serial.println(F("DEBUG: on"));
+	Serial.println(F("Function: void setup()"));
 #endif
 
 
@@ -40,7 +40,7 @@ void setup() {
 void loop() {
 #ifdef DEBUG
 	// This makes the output somehow unreadable
-//	Serial.println("Function: void loop()");
+//	Serial.println(F("Function: void loop()"));
 #endif
 
 	morseManager.awaitSignal();

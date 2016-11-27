@@ -4,13 +4,13 @@
 
 MorseManager::MorseManager() : _storedPassword(), _inputPassword(_storedPassword.getPasswordLength()) {
 #ifdef DEBUG
-	Serial.println("Function: MorseManager()");
+	Serial.println(F("Function: MorseManager()"));
 #endif
 }
 
 void MorseManager::resetPassword() {
 #ifdef DEBUG
-	Serial.println("Function: resetPassword()");
+	Serial.println(F("Function: resetPassword()"));
 #endif
 
   _storedPassword.resetPassword();
@@ -18,7 +18,7 @@ void MorseManager::resetPassword() {
 
 void MorseManager::awaitSignal() {
 #ifdef DEBUG
-  Serial.println("Function: void awaitSignal()");
+  Serial.println(F("Function: void awaitSignal()"));
 #endif
 
   _inputPassword.processInput(_checkSignal());
@@ -72,13 +72,13 @@ void MorseManager::awaitSignal() {
 
 bool MorseManager::_checkInput() {
 #ifdef DEBUG
-	Serial.println("Function: bool checkInput(MorseSignal *input)");
+	Serial.println(F("Function: bool checkInput()"));
 #endif
 
   for (unsigned int i = 0; i < _storedPassword.getPasswordLength(); i++) {
 
 #ifdef DEBUG
-    		Serial.print("password[" + i + "] = " + _storedPassword.getValueAt(i) + ", input[" + i + "] = " + _inputPassword.getValueAt(i));
+    		Serial.println(F("password[" + i + "] = " + _storedPassword.getValueAt(i) + ", input[" + i + "] = " + _inputPassword.getValueAt(i)));
 #endif
 
     if (_inputPassword.getValueAt(i) != _storedPassword.getValueAt(i)) {
@@ -90,7 +90,7 @@ bool MorseManager::_checkInput() {
 
 void MorseManager::_grantEntry() {
 #ifdef DEBUG
-	Serial.println("Function: void grantEntry()");
+	Serial.println(F("Function: void grantEntry()"));
 #endif
 
 	// wait humanize stealth time
@@ -106,7 +106,7 @@ void MorseManager::_grantEntry() {
 
 void MorseManager::_denyEntry() {
 #ifdef DEBUG
-	Serial.println("Function: void denyEntry()");
+	Serial.println(F("Function: void denyEntry()"));
 #endif
 
 	delay(denyTime);
@@ -126,7 +126,7 @@ bool MorseManager::_checkSignal() {
 
 void MorseManager::reset() {
 #ifdef DEBUG
-	Serial.println("Function: void reset()");
+	Serial.println(F("Function: void reset()"));
 #endif
 
   _inputPassword.reset();
@@ -139,7 +139,7 @@ void MorseManager::reset() {
 	// to begin, signal button has to be in released state
 	if (_checkSignal()) {
 #ifdef DEBUG
-		Serial.println("iPin is pressed (has to be released to go on)");
+		Serial.println(F("iPin is pressed (has to be released to go on)"));
 #endif
 		// blink red
 		digitalWrite(green, false);
@@ -156,6 +156,6 @@ void MorseManager::reset() {
 	digitalWrite(green, false);
 
 #ifdef DEBUG
-	Serial.println("Resetting now");
+	Serial.println(F("Resetting now"));
 #endif
 }
