@@ -9,3 +9,6 @@
 
 // Setup serial communication (9600 should be right - leave it if you are unsure)
 #define serialBPS 9600
+
+// Debug on or off
+#define debug true

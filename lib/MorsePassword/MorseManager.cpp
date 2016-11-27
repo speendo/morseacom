@@ -10,10 +10,14 @@ MorseManager::MorseManager() : _storedPassword(), _inputPassword(_storedPassword
 
 void MorseManager::resetPassword() {
 #ifdef DEBUG
-	Serial.println(F("Function: resetPassword()"));
+	Serial.println(F("Function: void resetPassword()"));
 #endif
 
   _storedPassword.resetPassword();
+
+#ifdef DEBUG
+	Serial.println(F("End void resetPassword()"));
+#endif
 }
 
 void MorseManager::awaitSignal() {
@@ -78,7 +82,7 @@ bool MorseManager::_checkInput() {
   for (unsigned int i = 0; i < _storedPassword.getPasswordLength(); i++) {
 
 #ifdef DEBUG
-    		Serial.println(F("password[" + i + "] = " + _storedPassword.getValueAt(i) + ", input[" + i + "] = " + _inputPassword.getValueAt(i)));
+    		Serial.println(String("password[") + i + "] = " + _storedPassword.getValueAt(i) + ", input[" + i + "] = " + _inputPassword.getValueAt(i));
 #endif
 
     if (_inputPassword.getValueAt(i) != _storedPassword.getValueAt(i)) {

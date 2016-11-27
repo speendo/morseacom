@@ -54,7 +54,7 @@ void InputMorsePassword::processInput(bool signal) {
 
 #ifdef DEBUG
 				Serial.println(F("Provided key is longer than password (switching to Standby mode)"));
-				Serial.print(F("(current length: " + inputCount + ", expected length: " + _expectedPasswordLength + ")"));
+				Serial.print(String("(current length: ") + _position + ", expected length: " + _expectedPasswordLength + ")");
 #endif
 
 				_inputStatus = preCheckFailed;
@@ -88,14 +88,14 @@ void InputMorsePassword::endSignal(unsigned long newTimeStamp) {
 	unsigned int sigTime = newTimeStamp - _lastTimeStamp;
 
 #ifdef DEBUG
-	Serial.print(F("Signal length:"	+ sigTime));
+	Serial.print("Signal length:"	+ sigTime);
 #endif
 
 	// check if sigTime is at least minSigTime
 	if (sigTime >= minSigTime) {
 
 #ifdef DEBUG
-	Serial.print(F("inputSignal[" + inputCount + "] = " + sigTime));
+	Serial.print(String("inputSignal[") + _position + "] = " + sigTime);
 #endif
 
 		_durations[_position] =
@@ -130,7 +130,7 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 #ifdef DEBUG
 	Serial.println(F("Unordered keyLengths are:"));
 	for (unsigned int i = 0; i < (_expectedPasswordLength); i++) {
-		Serial.print(F("input: " + _durations[i]));
+		Serial.print("input: " + _durations[i]);
 	}
 #endif
 
@@ -142,7 +142,7 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 #ifdef DEBUG
 	Serial.println(F("Ordered keyLengths are:"));
 	for (unsigned int i = 0; i < (_expectedPasswordLength); i++) {
-		Serial.println(F("durationsCopy: " + durationsCopy[i]);
+		Serial.println("durationsCopy: " + durationsCopy[i]);
 	}
 #endif
 
@@ -173,13 +173,13 @@ void InputMorsePassword::translateInput(unsigned int ditCount) {
 		avInputLength = (avDit + avDah) / 2;
 
 #ifdef DEBUG
-		Serial.println(F("avDit: " + avDit));
-		Serial.println(F("avDah: " + avDah));
+		Serial.println("avDit: " + avDit);
+		Serial.println("avDah: " + avDah);
 #endif
 	}
 
 #ifdef DEBUG
-	Serial.println(F("avInputLength: " + avInputLength));
+	Serial.println("avInputLength: " + avInputLength);
 #endif
 
 #ifdef DEBUG
