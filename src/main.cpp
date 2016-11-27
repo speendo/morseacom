@@ -34,6 +34,8 @@ void setup() {
 	morseManager.resetPassword();
 
 	morseManager.reset();
+
+	Serial.println("Setup complete. Now waiting for morse signals.");
 }
 
 void loop() {
