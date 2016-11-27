@@ -1,5 +1,6 @@
-// Do not remove the include below
-#include "Morse-A-Com-noVal.h"
+#include "Arduino.h"
+#include "EEPROM.h"
+
 #include "MorseManager.h"
 
 #include "BasicSettings.h"

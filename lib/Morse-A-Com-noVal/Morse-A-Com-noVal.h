@@ -1,5 +1,5 @@
 #include "Arduino.h"
 #include "EEPROM.h"
 
-void setup();
+//void setup();
 void loop();
