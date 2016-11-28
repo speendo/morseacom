@@ -58,7 +58,7 @@ String StoredMorsePassword::_getNewPW() {
 	}
 
 	// now receive the password
-	Serial.println("Please enter new password (\".\": dit, \"-\": dah) and press <Enter> (\"N <Enter\" for no password):");
+	Serial.println("Please enter new password (\".\": dit, \"-\": dah) and press <Enter> (\"N <Enter>\" for no password):");
 	while (true) {
 		if (Serial.available()) {
 			char inChar = (char)Serial.read();
