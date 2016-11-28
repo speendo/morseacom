@@ -21,14 +21,15 @@ void StoredMorsePassword::resetPassword() {
 		} else {
 			Serial.println("No password set.");
 		}
-		Serial.println(String("Press <Enter> within ") + resetPasswordTimeout + " ms to change the password.");
+		Serial.println(String("Press \"Y <Enter>\" within ") + resetPasswordTimeout + " ms to change the password.");
 		unsigned long lastTimeStamp = millis();
 
 		bool changePW = false;
 		// Timeout, because if(Serial) is not reliable on most boards
 		while (millis() - lastTimeStamp <= resetPasswordTimeout) {
 			if (Serial.available()) {
-				if ((char)Serial.read() == '\n') {
+				char inChar = (char)Serial.read();
+				if (inChar == '\n' || inChar == 'y' || inChar == 'Y') {
 					changePW = true;
 					break;
 				}
@@ -57,14 +58,15 @@ String StoredMorsePassword::_getNewPW() {
 	}
 
 	// now receive the password
-	Serial.println("Please enter new password (\".\": dit, \"-\": dah) and press <Enter>:");
+	Serial.println("Please enter new password (\".\": dit, \"-\": dah) and press <Enter> (\"N <Enter\" for no password):");
 	while (true) {
 		if (Serial.available()) {
 			char inChar = (char)Serial.read();
 
 			Serial.print((String)inChar);
 
-			if (inChar == '\r' || inChar == '\n') {
+			if (inChar == '\r' || inChar == '\n' || inChar == 'n' || inChar == 'N') {
+				Serial.println();
 				return newPassword;
 			} else {
 				newPassword += inChar;
