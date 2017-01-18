@@ -29,7 +29,7 @@ void StoredMorsePassword::resetPassword() {
 		while (millis() - lastTimeStamp <= resetPasswordTimeout) {
 			if (Serial.available()) {
 				char inChar = (char)Serial.read();
-				if (inChar == '\n' || inChar == 'y' || inChar == 'Y') {
+				if (inChar == '\n' || inChar == '\r' || inChar == 'y' || inChar == 'Y') {
 					changePW = true;
 					break;
 				}
@@ -58,14 +58,14 @@ String StoredMorsePassword::_getNewPW() {
 	}
 
 	// now receive the password
-	Serial.println("Please enter new password (\".\": dit, \"-\": dah) and press <Enter> (\"N <Enter>\" for no password):");
+	Serial.println("Please enter new password (\".\": dit, \"-\": dah). Finish with \"$\" (or \"\\r\"/\"\\n\").");
 	while (true) {
 		if (Serial.available()) {
 			char inChar = (char)Serial.read();
 
 			Serial.print((String)inChar);
 
-			if (inChar == '\r' || inChar == '\n' || inChar == 'n' || inChar == 'N') {
+			if (inChar == '\r' || inChar == '\n' || inChar == '$') {
 				Serial.println();
 				return newPassword;
 			} else {
